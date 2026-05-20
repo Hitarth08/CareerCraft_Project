@@ -7,8 +7,8 @@ from docx import Document
 import re
 # import spacy
 import json
-import tkinter as tk
-from tkinter import filedialog
+# import tkinter as tk
+# from tkinter import filedialog
 from groq import Groq
 import os
 from dotenv import load_dotenv
@@ -48,23 +48,23 @@ client = Groq(api_key=api_key)
 # =========================
 # FILE PICKER
 # =========================
-def select_file():
-    root = tk.Tk()
-    root.withdraw()
-    root.lift()
-    root.attributes('-topmost', True)
+# def select_file():
+#     root = tk.Tk()
+#     root.withdraw()
+#     root.lift()
+#     root.attributes('-topmost', True)
 
-    file_path = filedialog.askopenfilename(
-        title="Choose Resume File",
-        filetypes=[
-            ("PDF files", "*.pdf"),
-            ("Word files", "*.docx"),
-            ("All files", "*.*")
-        ]
-    )
+#     file_path = filedialog.askopenfilename(
+#         title="Choose Resume File",
+#         filetypes=[
+#             ("PDF files", "*.pdf"),
+#             ("Word files", "*.docx"),
+#             ("All files", "*.*")
+#         ]
+#     )
 
-    root.destroy()
-    return file_path
+#     root.destroy()
+#     return file_path
 
 
 # =========================
@@ -562,25 +562,25 @@ def generate_project_recommendations(profile):
     else:
         return {"error": "No JSON found", "raw": result[:300]}
     
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    print("Opening file chooser...")
-    file_path = select_file()
+#     print("Opening file chooser...")
+#     file_path = select_file()
 
-    if not file_path:
-        print("❌ No file selected")
-    else:
-        print("✅ Selected file:", file_path)
+#     if not file_path:
+#         print("❌ No file selected")
+#     else:
+#         print("✅ Selected file:", file_path)
 
-        print("\nProcessing Resume...\n")
-        resume_profile = process_resume(file_path)
+#         print("\nProcessing Resume...\n")
+#         resume_profile = process_resume(file_path)
 
-        print("\n📄 EXTRACTED PROFILE:\n")
-        print(json.dumps(resume_profile, indent=4))
+#         print("\n📄 EXTRACTED PROFILE:\n")
+#         print(json.dumps(resume_profile, indent=4))
 
-        print("\n🏢 GENERATING COMPANY RECOMMENDATIONS...\n")
-        #companies = generate_company_recommendations(resume_profile)
-        #print(json.dumps(companies, indent=4))
+#         print("\n🏢 GENERATING COMPANY RECOMMENDATIONS...\n")
+#         #companies = generate_company_recommendations(resume_profile)
+#         #print(json.dumps(companies, indent=4))
 # ── ATS ANALYSIS ──────────────────────────────────────
         print("\n🎯 GENERATING ATS ANALYSIS...\n")
 
