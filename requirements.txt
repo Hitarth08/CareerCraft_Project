@@ -6,3 +6,4 @@ reportlab
 gspread
 google-auth
 python-dotenv
+beautifulsoup4
