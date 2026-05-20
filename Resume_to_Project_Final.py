@@ -5,7 +5,7 @@
 import fitz
 from docx import Document
 import re
-import spacy
+# import spacy
 import json
 import tkinter as tk
 from tkinter import filedialog
@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Load spaCy
-nlp = spacy.load("en_core_web_sm")
+# nlp = spacy.load("en_core_web_sm")
 
 # =========================
 # GROQ CLIENT SETUP
@@ -113,10 +113,10 @@ def clean_text(text):
 # NAME (spaCy fallback)
 # =========================
 def extract_name_spacy(text):
-    doc = nlp(text[:1000])
-    for ent in doc.ents:
-        if ent.label_ == "PERSON":
-            return ent.text
+    # doc = nlp(text[:1000])
+    # for ent in doc.ents:
+    #     if ent.label_ == "PERSON":
+    #         return ent.text
     return "Not Found"
 
 

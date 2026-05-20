@@ -2,9 +2,7 @@ streamlit
 groq
 pymupdf
 python-docx
-spacy==3.7.2
 reportlab
 gspread
 google-auth
 python-dotenv
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl

@@ -7,7 +7,7 @@ import time
 import io
 import fitz
 from docx import Document
-import spacy
+# import spacy
 import re
 from bs4 import BeautifulSoup
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable
@@ -40,11 +40,11 @@ st.set_page_config(
 # =========================
 # LOCAL HELPERS
 # =========================
-@st.cache_resource
-def load_nlp():
-    return spacy.load("en_core_web_sm")
+# @st.cache_resource
+# def load_nlp():
+#     return spacy.load("en_core_web_sm")
 
-nlp = load_nlp()
+# nlp = load_nlp()
 
 def extract_text_from_pdf(file_bytes):
     pdf = fitz.open(stream=file_bytes, filetype="pdf")
@@ -55,10 +55,12 @@ def extract_text_from_docx(file_bytes_io):
     return "\n".join([p.text for p in doc.paragraphs])
 
 def extract_name_spacy(text):
-    doc = nlp(text[:1000])
-    for ent in doc.ents:
-        if ent.label_ == "PERSON":
-            return ent.text
+#     doc = nlp(text[:1000])
+#     for ent in doc.ents:
+#         if ent.label_ == "PERSON":
+#             return ent.text
+#     return "Not Found"
+# spaCy removed — LLM handles name extraction
     return "Not Found"
 
 
