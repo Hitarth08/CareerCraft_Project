@@ -11,6 +11,8 @@ import tkinter as tk
 from tkinter import filedialog
 from groq import Groq
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 # Load spaCy
 nlp = spacy.load("en_core_web_sm")
@@ -33,6 +35,15 @@ def call_llm(prompt, max_tokens=800):
     )
     return response.choices[0].message.content
 
+try:
+    import streamlit as st
+    api_key = st.secrets["GROQ_API_KEY"]
+except:
+    from dotenv import load_dotenv
+    load_dotenv()
+    api_key = os.environ.get("GROQ_API_KEY")
+
+client = Groq(api_key=api_key)
 
 # =========================
 # FILE PICKER
