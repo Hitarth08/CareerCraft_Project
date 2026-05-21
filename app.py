@@ -95,7 +95,7 @@ def get_sheet():
     return sheet
 
 
-def log_user(profile, ats_data, goal, target_role):
+def log_user(profile, ats_data=None, goal=None, target_role=None, update=False):
     try:
         sheet = get_sheet()
 
@@ -111,8 +111,23 @@ def log_user(profile, ats_data, goal, target_role):
         if education and isinstance(education[0], dict):
             edu_summary = education[0].get("degree", "") + " — " + education[0].get("college", "")
 
+        import pytz
+        ist = pytz.timezone("Asia/Kolkata")
+        from datetime import datetime
+        timestamp = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
+
+        if update:
+            # Find the row with matching name and update ATS + Goal
+            cell = sheet.find(name)
+            if cell:
+                row_num = cell.row
+                sheet.update_cell(row_num, 9,  ats_score)
+                sheet.update_cell(row_num, 10, goal if goal else "Not Selected")
+                sheet.update_cell(row_num, 11, target_role if target_role else "N/A")
+                return
+
         row = [
-            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            timestamp,
             name,
             edu_summary,
             len(skills),
@@ -124,12 +139,11 @@ def log_user(profile, ats_data, goal, target_role):
             goal if goal else "Not Selected",
             target_role if target_role else "N/A"
         ]
-
         sheet.append_row(row)
-        print("✅ Logged successfully")
 
     except Exception as e:
-        print(f"❌ Logging failed: {e}")   # Silent fail — never breaks the app if logging fails
+        print(f"Logging error: {e}")
+        pass
 
 
 # =========================
@@ -709,6 +723,13 @@ if uploaded_file is not None:
             st.session_state.ats_data = analyze_resume_ats(st.session_state.raw_text, st.session_state.profile)
             prog_a.empty()
             stat_a.empty()
+            log_user(
+                st.session_state.profile,
+                ats_data=st.session_state.ats_data,
+                goal=st.session_state.goal,
+                target_role=st.session_state.target_role,
+                update=True
+            )
 
         ats = st.session_state.ats_data
 
@@ -1046,6 +1067,13 @@ if uploaded_file is not None:
                 )
             prog_p.empty()
             stat_p.empty()
+            log_user(
+                st.session_state.profile,
+                ats_data=st.session_state.ats_data,
+                goal=st.session_state.goal,
+                target_role=st.session_state.target_role,
+                update=True
+            )
             st.rerun()
 
         else:
