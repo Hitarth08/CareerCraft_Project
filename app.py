@@ -95,7 +95,7 @@ def get_sheet():
     return sheet
 
 
-def log_user(profile, ats_data=None, goal=None, target_role=None):
+def log_user(profile, ats_data, goal, target_role):
     try:
         sheet = get_sheet()
 
@@ -111,13 +111,8 @@ def log_user(profile, ats_data=None, goal=None, target_role=None):
         if education and isinstance(education[0], dict):
             edu_summary = education[0].get("degree", "") + " — " + education[0].get("college", "")
 
-        import pytz
-        from datetime import datetime
-        ist = pytz.timezone("Asia/Kolkata")
-        timestamp = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
-
         row = [
-            timestamp,
+            datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             name,
             edu_summary,
             len(skills),
@@ -130,19 +125,12 @@ def log_user(profile, ats_data=None, goal=None, target_role=None):
             target_role if target_role else "N/A"
         ]
 
-        # If row already exists for this session — update it
-        if st.session_state.get("log_row_number"):
-            row_num = st.session_state.log_row_number
-            sheet.update(f"A{row_num}:K{row_num}", [row])
-        else:
-            # First time — append and save row number
-            sheet.append_row(row)
-            log_row = len(sheet.get_all_values())
-            st.session_state.log_row_number = log_row
+        sheet.append_row(row)
+        print("✅ Logged successfully")
 
     except Exception as e:
-        print(f"Logging error: {e}")
-        pass
+        print(f"❌ Logging failed: {e}")   # Silent fail — never breaks the app if logging fails
+
 
 # =========================
 # PROJECT FUNCTIONS
@@ -553,7 +541,6 @@ defaults = {
     "show_ats":         False,
     "raw_text":         None,
     "logged":           False,
-    "log_row_number":   None, 
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -630,10 +617,10 @@ if uploaded_file is not None:
 
         # Log user to Google Sheets (runs once per resume upload)
         log_user(
-            profile
-            # st.session_state.ats_data,
-            # st.session_state.goal,
-            # st.session_state.target_role
+            profile,
+            st.session_state.ats_data,
+            st.session_state.goal,
+            st.session_state.target_role
         )
         st.session_state.logged = True
 
@@ -722,10 +709,6 @@ if uploaded_file is not None:
             st.session_state.ats_data = analyze_resume_ats(st.session_state.raw_text, st.session_state.profile)
             prog_a.empty()
             stat_a.empty()
-            log_user(
-                st.session_state.profile,
-                ats_data=st.session_state.ats_data
-            )
 
         ats = st.session_state.ats_data
 
@@ -1063,14 +1046,7 @@ if uploaded_file is not None:
                 )
             prog_p.empty()
             stat_p.empty()
-            log_user(
-                st.session_state.profile,
-                ats_data=st.session_state.ats_data,
-                goal=st.session_state.goal,
-                target_role=st.session_state.target_role
-            )
             st.rerun()
-
 
         else:
             projects_data = st.session_state.projects
