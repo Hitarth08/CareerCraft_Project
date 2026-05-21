@@ -95,7 +95,7 @@ def get_sheet():
     return sheet
 
 
-def log_user(profile, ats_data=None, goal=None, target_role=None, update=False):
+def log_user(profile, ats_data=None, goal=None, target_role=None):
     try:
         sheet = get_sheet()
 
@@ -112,19 +112,9 @@ def log_user(profile, ats_data=None, goal=None, target_role=None, update=False):
             edu_summary = education[0].get("degree", "") + " — " + education[0].get("college", "")
 
         import pytz
-        ist = pytz.timezone("Asia/Kolkata")
         from datetime import datetime
+        ist = pytz.timezone("Asia/Kolkata")
         timestamp = datetime.now(ist).strftime("%Y-%m-%d %H:%M:%S")
-
-        if update:
-            # Find the row with matching name and update ATS + Goal
-            cell = sheet.find(name)
-            if cell:
-                row_num = cell.row
-                sheet.update_cell(row_num, 9,  ats_score)
-                sheet.update_cell(row_num, 10, goal if goal else "Not Selected")
-                sheet.update_cell(row_num, 11, target_role if target_role else "N/A")
-                return
 
         row = [
             timestamp,
@@ -139,12 +129,20 @@ def log_user(profile, ats_data=None, goal=None, target_role=None, update=False):
             goal if goal else "Not Selected",
             target_role if target_role else "N/A"
         ]
-        sheet.append_row(row)
+
+        # If row already exists for this session — update it
+        if st.session_state.get("log_row_number"):
+            row_num = st.session_state.log_row_number
+            sheet.update(f"A{row_num}:K{row_num}", [row])
+        else:
+            # First time — append and save row number
+            sheet.append_row(row)
+            log_row = len(sheet.get_all_values())
+            st.session_state.log_row_number = log_row
 
     except Exception as e:
         print(f"Logging error: {e}")
         pass
-
 
 # =========================
 # PROJECT FUNCTIONS
@@ -555,6 +553,7 @@ defaults = {
     "show_ats":         False,
     "raw_text":         None,
     "logged":           False,
+    "log_row_number":   None, 
 }
 for k, v in defaults.items():
     if k not in st.session_state:
@@ -631,10 +630,10 @@ if uploaded_file is not None:
 
         # Log user to Google Sheets (runs once per resume upload)
         log_user(
-            profile,
-            st.session_state.ats_data,
-            st.session_state.goal,
-            st.session_state.target_role
+            profile
+            # st.session_state.ats_data,
+            # st.session_state.goal,
+            # st.session_state.target_role
         )
         st.session_state.logged = True
 
@@ -725,10 +724,7 @@ if uploaded_file is not None:
             stat_a.empty()
             log_user(
                 st.session_state.profile,
-                ats_data=st.session_state.ats_data,
-                goal=st.session_state.goal,
-                target_role=st.session_state.target_role,
-                update=True
+                ats_data=st.session_state.ats_data
             )
 
         ats = st.session_state.ats_data
@@ -1071,10 +1067,10 @@ if uploaded_file is not None:
                 st.session_state.profile,
                 ats_data=st.session_state.ats_data,
                 goal=st.session_state.goal,
-                target_role=st.session_state.target_role,
-                update=True
+                target_role=st.session_state.target_role
             )
             st.rerun()
+
 
         else:
             projects_data = st.session_state.projects
