@@ -237,6 +237,11 @@ def generate_company_recommendations(profile):
     - Work experience: Even 1 internship at a known company upgrades recommendations
     - Projects: Strong AI/ML/full-stack projects improve tier access significantly
     - Fresher vs experienced: A fresher should never have Google in Tier 1 unless exceptional profile
+    - All companies must be real companies actively hiring in India (2026-2027)
+    - Do NOT default to IT companies — match companies to the candidate's actual domain
+    - For non-IT profiles (Finance, Marketing, HR, Operations, Healthcare and others) 
+    suggest companies from THEIR industry, not software companies
+    - Only suggest IT/tech companies if the candidate has IT skills or background
 
     Give exactly 3 companies per tier.
     For each company give a 1-line reason specific to THIS candidate's profile — not generic reasons.
@@ -444,7 +449,9 @@ def generate_project_recommendations(profile):
 
         prompt = f"""
         You are an expert career mentor and project advisor.
-
+        - If the candidate is from a non-IT domain (Finance, Marketing, HR, Operations, 
+        Healthcare, Manufacturing etc.) suggest projects relevant to THEIR domain
+        - Do NOT default to software/ML projects for non-IT profiles
         The candidate wants to UPSKILL and improve their current profile.
 
         Based on the following profile, suggest EXACTLY 5 project ideas that will
